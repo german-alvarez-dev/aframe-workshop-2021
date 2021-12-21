@@ -3,12 +3,64 @@
 <head>
     <title>WebAR con A-Frame</title>
     <script src="https://aframe.io/releases/0.9.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
 
+    <script>
+
+        let score = 0
+
+        AFRAME.registerComponent('shootable', {
+            init: function () {
+                this.el.onclick = () => {
+                    score++
+                    document.querySelector('[text]').setAttribute('value', score + " barcos derribados")
+                    this.el.setAttribute('animation', 'property: position; to: 0 -300 0; dur: 4000')
+                    this.el.removeAttribute('shootable')
+                }
+            }
+        })
+
+    </script>
 </head>
 
 <body>
 
-    <!-- PLAY HERE! -->
+    <a-scene>
+
+        <a-assets>
+            <img src="textures/sky.jpg" id="sky">
+            <img src="textures/marble.jpg" id="moon">
+            <a-gltf-model src="ship/scene_ship.gltf" id="ship"></a-gltf-model>
+        </a-assets>
+
+        <a-sky material="shader: flat; src: #sky" radius="250" theta-length="90"></a-sky>
+
+        <a-sphere material="shader: flat; src: #moon" position="0 10 -10"></a-sphere>
+
+        <a-ocean width="500" depth="500" speed="3" material="color: #9CE3F9; metalness: 0" density="300"></a-ocean>
+
+        <a-entity light="type: ambient; color: #555"></a-entity>
+        <a-entity light="type: point; color: white; intensity: 1" position="0 0 -10"></a-entity>
+
+        <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 30000;">
+            <a-gltf-model src="#ship" position="0 0 -60" scale=".2 .2 .2" rotation="0 -90 0" shootable></a-gltf-model>
+            <a-gltf-model src="#ship" position="0 0 60" scale=".2 .2 .2" rotation="0 90 0" shootable></a-gltf-model>
+        </a-entity>
+
+
+        <a-entity camera look-controls position="0 3 0">
+
+            <a-entity cursor="fuse: true; fuseTimeout: 100" raycaster="objects: [shootable]"
+                geometry="primitive: ring; radiusInner: .02; radiusOuter: .03" position="0 0 -1"
+                material="shader: flat"></a-entity>
+
+            <a-text value="0 barcos derribados" color="white" position="0 -.1 -1" width="1" align="center"></a-text>
+
+        </a-entity>
+
+
+
+    </a-scene>
 
 </body>
 
